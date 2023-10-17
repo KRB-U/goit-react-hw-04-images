@@ -31,7 +31,7 @@ const App = () => {
   const [loadMore, setLoadMore] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!queryValue) {
@@ -62,7 +62,6 @@ const App = () => {
           toast.success(`знайдено ${amountImg} результатів`);
         }
       } catch (err) {
-        setError(true);
         toast.error('Щось пішло не так');
       } finally {
         setLoading(false);
