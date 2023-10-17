@@ -17,24 +17,7 @@ import toast, { Toaster } from 'react-hot-toast';
 // STYLED
 import { ContainerApp } from './Layer/Layer';
 
-const  App =()=> {
-  // state = {
-  //   fetchedImages: [],
-
-  //   showModal: false,
-  //   largeImageURL: null,
-  //   tags: null,
-
-  //   queryValue: '',
-  //   currentPage: 1,
-
-  //   showLoadingMore: false,
-  //   loadMore: false,
-
-  //   loading: false,
-  //   error: false,
-  // };
-
+const App = () => {
   const [fetchedImages, setFetchedImages] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
@@ -42,36 +25,32 @@ const  App =()=> {
   const [tags, setTags] = useState(null);
 
   const [queryValue, setQueryValue] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const [showLoadingMore, setShowLoadingMore] = useState(false);
+  const [loadMore, setLoadMore] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  async componentDidUpdate(_, prevState) {
-    if (
-      prevState.queryValue !== this.state.queryValue ||
-      prevState.currentPage !== this.state.currentPage
-    ) {
-      this.setState({ loading: true, error: false });
+  useEffect(() => {
+    if (!queryValue) {
+      return;
+    }
 
-      const { currentPage, queryValue } = this.state;
-
+    const fetchData = async () => {
       try {
-        // запит із затримкою , впевнитись чи відпрацьовує спінер
-        const delayedSearch = () => {
-          return new Promise(resolve => {
-            setTimeout(async () => {
-              const images = await searchItem(currentPage, queryValue);
-              resolve(images);
-            }, 700);
-          });
-        };
+        setLoading(true);
+        setError(false);
 
-        const images = await delayedSearch();
-        // const images = await searchItem(currentPage, queryValue);
-        //
-        this.setState(prevState => ({
-          fetchedImages: [...prevState.fetchedImages, ...images.hits],
-          loadMore: currentPage < Math.ceil(images.totalHits / 12),
-        }));
+        const images = await searchItem(currentPage, queryValue);
+
+        setFetchedImages(prevFetchedImages => [
+          ...prevFetchedImages,
+          ...images.hits,
+        ]);
+
+        setLoadMore(currentPage < Math.ceil(images.totalHits / 12));
 
         const amountImg = images.totalHits;
 
@@ -83,88 +62,66 @@ const  App =()=> {
           toast.success(`знайдено ${amountImg} результатів`);
         }
       } catch (err) {
-        this.setState({ error: true });
+        setError(true);
         toast.error('Щось пішло не так');
       } finally {
-        this.setState({ loading: false, showLoadingMore: false });
+        setLoading(false);
+        setShowLoadingMore(false);
       }
-    }
-  }
+    };
 
-  const  handleFormSubmit = queryValue => {
-    this.setState({
-      queryValue: queryValue,
-      fetchedImages: [],
-      currentPage: 1,
-    });
+    fetchData();
+  }, [queryValue, currentPage]);
+
+  const handleFormSubmit = queryValue => {
+    setQueryValue(queryValue);
+    setFetchedImages([]);
+    setCurrentPage(1);
   };
 
-  // handleBackDropClick = evt => {
-  //   if (evt.currnetTarget === evt.target) {
-  //     this.toggleModal();
-  //   }
-  // };
-
   const toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+    setShowModal(prevShowModal => !prevShowModal);
   };
 
   const handleImageClick = (largeImageURL, tags) => {
-    this.setState({
-      largeImageURL: largeImageURL,
-      tags: tags,
-      showModal: true,
-    });
+    setLargeImageURL(largeImageURL);
+    setTags(tags);
+    setShowModal(true);
   };
 
   const handleLoadMore = () => {
-    this.setState(prevState => ({
-      currentPage: prevState.currentPage + 1,
-      showLoadingMore: true,
-    }));
+    setCurrentPage(prevCurrentPage => prevCurrentPage + 1);
+    setShowLoadingMore(true);
   };
 
-    // const {
-    //   fetchedImages,
-    //   showModal,
-    //   loading,
-    //   largeImageURL,
-    //   tags,
-    //   loadMore,
-    //   showLoadingMore,
-    // } = this.state;
+  return (
+    <ContainerApp>
+      <Searchbar onSubmit={handleFormSubmit} />
+      {loading && <LoaderSpiner />}
 
-    return (
-      <ContainerApp>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        {loading && <LoaderSpiner />}
+      <ImageGallery items={fetchedImages} onClickImage={handleImageClick} />
+      {(showLoadingMore && <LoaderSpiner />) ||
+        (loadMore && <ButtonLoadMore onClick={handleLoadMore} />)}
 
-        <ImageGallery
-          items={fetchedImages}
-          onClickImage={this.handleImageClick}
+      {showModal && (
+        <ModalFrame
+          largeImageURL={largeImageURL}
+          tags={tags}
+          onClose={toggleModal}
         />
-        {(showLoadingMore && <LoaderSpiner />) ||
-          (loadMore && <ButtonLoadMore onClick={this.handleLoadMore} />)}
+      )}
+      <Toaster
+        toastOptions={{
+          className: '',
+          duration: 750,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+    </ContainerApp>
+  );
+};
 
-        {showModal && (
-          <ModalFrame
-            largeImageURL={largeImageURL}
-            tags={tags}
-            onClose={this.toggleModal}
-          />
-        )}
-        <Toaster
-          toastOptions={{
-            className: '',
-            duration: 750,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-          }}
-        />
-      </ContainerApp>
-    );
-}
+export { App };
