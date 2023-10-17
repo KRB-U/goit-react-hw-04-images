@@ -1,34 +1,30 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { Overlay, ImageContainer } from './Modal.styled';
 
-class ModalFrame extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+const ModalFrame = ({ largeImageURL, tags, onClose }) => {
+  useEffect(() => {
+    const handleKeyDown = evt => {
+      if (evt.code === 'Escape') {
+        onClose();
+      }
+    };
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
+    window.addEventListener('keydown', handleKeyDown);
 
-  handleKeyDown = evt => {
-    if (evt.code === 'Escape') {
-      this.props.onClose();
-    }
-  };
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
-  render() {
-    const { largeImageURL, tags, onClose } = this.props;
-
-    return (
-      <>
-        <Overlay onClick={onClose}>
-          <ImageContainer>
-            <img src={largeImageURL} alt={tags} />
-          </ImageContainer>
-        </Overlay>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Overlay onClick={onClose}>
+        <ImageContainer>
+          <img src={largeImageURL} alt={tags} />
+        </ImageContainer>
+      </Overlay>
+    </>
+  );
+};
 
 export { ModalFrame };
