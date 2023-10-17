@@ -18,22 +18,32 @@ import toast, { Toaster } from 'react-hot-toast';
 import { ContainerApp } from './Layer/Layer';
 
 const  App =()=> {
-  state = {
-    fetchedImages: [],
+  // state = {
+  //   fetchedImages: [],
 
-    showModal: false,
-    largeImageURL: null,
-    tags: null,
+  //   showModal: false,
+  //   largeImageURL: null,
+  //   tags: null,
 
-    queryValue: '',
-    currentPage: 1,
+  //   queryValue: '',
+  //   currentPage: 1,
 
-    showLoadingMore: false,
-    loadMore: false,
+  //   showLoadingMore: false,
+  //   loadMore: false,
 
-    loading: false,
-    error: false,
-  };
+  //   loading: false,
+  //   error: false,
+  // };
+
+  const [fetchedImages, setFetchedImages] = useState([]);
+
+  const [showModal, setShowModal] = useState(false);
+  const [largeImageURL, setLargeImageURL] = useState(null);
+  const [tags, setTags] = useState(null);
+
+  const [queryValue, setQueryValue] = useState('');
+
+
 
   async componentDidUpdate(_, prevState) {
     if (
@@ -81,7 +91,7 @@ const  App =()=> {
     }
   }
 
-  handleFormSubmit = queryValue => {
+  const  handleFormSubmit = queryValue => {
     this.setState({
       queryValue: queryValue,
       fetchedImages: [],
@@ -95,13 +105,13 @@ const  App =()=> {
   //   }
   // };
 
-  toggleModal = () => {
+  const toggleModal = () => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
     }));
   };
 
-  handleImageClick = (largeImageURL, tags) => {
+  const handleImageClick = (largeImageURL, tags) => {
     this.setState({
       largeImageURL: largeImageURL,
       tags: tags,
@@ -109,7 +119,7 @@ const  App =()=> {
     });
   };
 
-  handleLoadMore = () => {
+  const handleLoadMore = () => {
     this.setState(prevState => ({
       currentPage: prevState.currentPage + 1,
       showLoadingMore: true,
