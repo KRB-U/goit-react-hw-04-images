@@ -1,4 +1,6 @@
-import { Component } from 'react';
+import { useState } from 'react';
+
+// ICONS
 import { IoMdSearch } from 'react-icons/io';
 
 //NOTIFY
@@ -13,47 +15,43 @@ import {
   SearchFormInput,
 } from './Searchbar.styled';
 
-class Searchbar extends Component {
-  state = {
-    currentQueryValue: '',
+const Searchbar = ({ onSubmit }) => {
+  const [currentQueryValue, setCurrentQueryValue] = useState('');
+
+  const handleQuerySearch = evt => {
+    setCurrentQueryValue(evt.target.value.toLowerCase());
   };
 
-  handleQuerySearch = evt => {
-    this.setState({ currentQueryValue: evt.target.value.toLowerCase() });
-  };
-
-  handleSubmit = evt => {
+  const handleSubmit = evt => {
     evt.preventDefault();
 
-    if (this.state.currentQueryValue.trim() === '') {
+    if (currentQueryValue.trim() === '') {
       return toast.error('Ведіть пошуковий запит!');
     }
 
-    this.props.onSubmit(this.state.currentQueryValue);
-    this.setState({ currentQueryValue: '' });
+    onSubmit(currentQueryValue);
+    setCurrentQueryValue(currentQueryValue);
   };
 
-  render() {
-    return (
-      <SearchbarStd>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchFormButton type="submit">
-            <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-            <IoMdSearch />
-          </SearchFormButton>
+  return (
+    <SearchbarStd>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchFormButton type="submit">
+          <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+          <IoMdSearch />
+        </SearchFormButton>
 
-          <SearchFormInput
-            type="text"
-            // autocomplete="off"
-            // autofocus
-            placeholder="Search images and photos"
-            onChange={this.handleQuerySearch}
-            value={this.state.currentQueryValue}
-          />
-        </SearchForm>
-      </SearchbarStd>
-    );
-  }
-}
+        <SearchFormInput
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleQuerySearch}
+          value={currentQueryValue}
+        />
+      </SearchForm>
+    </SearchbarStd>
+  );
+};
 
 export { Searchbar };
