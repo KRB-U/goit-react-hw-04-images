@@ -41,7 +41,7 @@ const App = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        setError(false);
+        // setError(false);
 
         const images = await searchItem(currentPage, queryValue);
 
