@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 // COMPONENT
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -17,7 +17,7 @@ import toast, { Toaster } from 'react-hot-toast';
 // STYLED
 import { ContainerApp } from './Layer/Layer';
 
-export class App extends Component {
+const  App =()=> {
   state = {
     fetchedImages: [],
 
@@ -116,16 +116,15 @@ export class App extends Component {
     }));
   };
 
-  render() {
-    const {
-      fetchedImages,
-      showModal,
-      loading,
-      largeImageURL,
-      tags,
-      loadMore,
-      showLoadingMore,
-    } = this.state;
+    // const {
+    //   fetchedImages,
+    //   showModal,
+    //   loading,
+    //   largeImageURL,
+    //   tags,
+    //   loadMore,
+    //   showLoadingMore,
+    // } = this.state;
 
     return (
       <ContainerApp>
@@ -158,5 +157,4 @@ export class App extends Component {
         />
       </ContainerApp>
     );
-  }
 }
