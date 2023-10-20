@@ -37,13 +37,18 @@ const App = () => {
     if (!queryValue) {
       return;
     }
+    const controller = new AbortController();
 
     const fetchData = async () => {
       try {
         setLoading(true);
         // setError(false);
 
-        const images = await searchItem(currentPage, queryValue);
+        const images = await searchItem(
+          currentPage,
+          queryValue,
+          controller.signal
+        );
 
         setFetchedImages(prevFetchedImages => [
           ...prevFetchedImages,
@@ -70,6 +75,8 @@ const App = () => {
     };
 
     fetchData();
+
+    return () => controller.abort();
   }, [queryValue, currentPage]);
 
   const handleFormSubmit = queryValue => {
