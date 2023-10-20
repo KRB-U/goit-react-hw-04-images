@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // COMPONENT
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -33,22 +33,27 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   // const [error, setError] = useState(false);
 
+  const controllerRef = useRef();
+
   useEffect(() => {
     if (!queryValue) {
       return;
     }
-    const controller = new AbortController();
 
     const fetchData = async () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+
+      controllerRef.current = new AbortController();
+      // console.log(controllerRef.signal);
       try {
         setLoading(true);
         // setError(false);
 
-        const images = await searchItem(
-          currentPage,
-          queryValue,
-          controller.signal
-        );
+        const images = await searchItem(currentPage, queryValue, {
+          signal: controllerRef.current.signal,
+        });
 
         setFetchedImages(prevFetchedImages => [
           ...prevFetchedImages,
@@ -78,7 +83,11 @@ const App = () => {
 
     fetchData();
 
-    return () => controller.abort();
+    return () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+    };
   }, [queryValue, currentPage]);
 
   const handleFormSubmit = queryValue => {
