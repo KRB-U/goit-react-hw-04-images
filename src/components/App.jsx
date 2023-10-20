@@ -67,7 +67,9 @@ const App = () => {
           toast.success(`знайдено ${amountImg} результатів`);
         }
       } catch (err) {
-        toast.error('Щось пішло не так');
+        if (err.code !== 'ERR_CANCELED') {
+          toast.error('Щось пішло не так');
+        }
       } finally {
         setLoading(false);
         setShowLoadingMore(false);
